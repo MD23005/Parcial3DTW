@@ -1,29 +1,20 @@
-// worker-nivel5.js
-
 self.onmessage = function(e) {
     const datos = e.data;
     const totalRegistros = datos.length;
 
-    // Arrays para almcenar datos válidos ( filtrando negativos)
     let temperaturasValidas = [];
     let presionesValidas = [];
     let sumaHumedad = 0;
     let sumaTemperatura = 0;
     let sumaPresion = 0;
-
     let registrosValidosContador = 0;
-
-    // Procesamos el array masivo de 250,000 rergistros
 
     for (let i = 0; i < totalRegistros; i++) {
         const registro = datos[i];
 
-        // REQUISITO: Filtrar valores negativos.
-        // Si temperatura, humedad o presión son menores a 0, se desacarta el registro.
-
         if (registro.temperatura >= 0 && registro.humedad >= 0 && registro.presion >= 0){
             temperaturasValidas.push(registro.temperatura);
-            presionesValidas-push(registro.presion);
+            presionesValidas.push(registro.presion);
 
             sumaTemperatura += registro.temperatura;
             sumaHumedad += registro.humedad;
@@ -32,26 +23,18 @@ self.onmessage = function(e) {
             registrosValidosContador++;
         }
 
-        //REQUISITOS: notificar el progreso a la interfaz (barra de carga)
-        // Reportamos cada 5,000 registros para optimizar el rendimiento
-
         if (i % 5000 === 0 || i === totalRegistros - 1){
-            const porcentaje = Math.round((i / totalRegistros)* 100);
+            const porcentaje = Math.round((i / totalRegistros) * 100);
             self.postMessage({ tipo: 'progreso', valor: porcentaje });
         }
-
     }
 
-    // REQUISITTO: Calcular promedios generales de los datos válidos
     const promedioTemperatura = registrosValidosContador > 0 ? (sumaTemperatura / registrosValidosContador) : 0;
     const promedioHumedad = registrosValidosContador > 0 ? (sumaHumedad / registrosValidosContador) : 0;
     const promedioPresion = registrosValidosContador > 0 ? (sumaPresion / registrosValidosContador) : 0;
 
-    // REQUISITO: Calcular TOP 10 de temperaturas y medidas de presion (de mayor a menor)
-    const top10Temperaturas = temperaturasValidas.sort((a, b) => b -a).slice(0,10);
-    const top10Presiones = presionesValidas.sort((a, b) => b -a).slice(0, 10);
-
-    // Estructura final con los resultados requeridos
+    const top10Temperaturas = temperaturasValidas.sort((a, b) => b - a).slice(0, 10);
+    const top10Presiones = presionesValidas.sort((a, b) => b - a).slice(0, 10);
 
     const resultados = {
         cantidadValidos: registrosValidosContador,
@@ -64,8 +47,11 @@ self.onmessage = function(e) {
         top10Presiones: top10Presiones
     };
 
-    // Envio de reulstados finales listos para el Card de boostrap y el JSON
-
-    self.postMessage({ tipo: 'finalizado', resultado: resultado });
-
+    // SOLUCIÓN DOBLE: Enviamos tanto en 'resultado' como en 'resultados' 
+    // para asegurar que el HTML lo lea bien use la propiedad que use.
+    self.postMessage({ 
+        tipo: 'finalizado', 
+        resultado: resultados,
+        resultados: resultados 
+    });
 };
