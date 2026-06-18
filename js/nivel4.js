@@ -43,6 +43,13 @@ function escribir(lineas, i = 0, j = 0) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+    // validar que tenga ubicacion guardada desde nivel 1
+    const ubicacion = localStorage.getItem('user_location');
+    if (!ubicacion) {
+        window.location.href = '../html/nivel1.html';
+        return;
+    }
+
     setTimeout(() => escribir(mensajes), 600);
 });
 
