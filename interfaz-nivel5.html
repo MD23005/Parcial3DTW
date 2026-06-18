@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nivel 5: EL Portal Cuántico</title>
+    <title>Nivel 5: El Portal Cuántico</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
@@ -70,9 +70,19 @@
     </div>
 
     <script>
+        // VALIDACIÓN DE FLUJO: Se ejecuta inmediatamente al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            const ubicacion = localStorage.getItem('user_location');
+            
+            // Si no existe la ubicación en localStorage, redirige al nivel 1
+            if (!ubicacion) {
+                alert("Acceso denegado: Primero debes completar los niveles anteriores.");
+                window.location.href = "./nivel1.html";
+            }
+        });
+
         document.getElementById('btnIniciarNivel5').addEventListener('click', iniciarProcesamientoNivel5);
 
-        // Guardará globalmente el objeto de estadísticas calculado para poder exportarlo a JSON
         let resultadosFinalesGuardados = null; 
 
         function iniciarProcesamientoNivel5() {
@@ -81,87 +91,67 @@
             const barraProgreso = document.getElementById('barraProgreso5');
             const cardResultados = document.getElementById('cardResultados5');
 
-            // 1. Resetear el estado visual de la interfaz
             btnIniciar.disabled = true;
             contenedorProgreso.classList.remove('d-none');
             cardResultados.classList.add('d-none');
             barraProgreso.style.width = '0%';
             barraProgreso.innerText = '0%';
 
-            // REQUISITO: Generar 250,000 registros simulados con valores negativos aleatorios
             const registrosSimulados = [];
             for (let i = 0; i < 250000; i++) {
                 registrosSimulados.push({
-                    temperatura: parseFloat((Math.random() * 80 - 20).toFixed(2)), // Valores de -20 a 60
-                    humedad: parseFloat((Math.random() * 120 - 20).toFixed(2)),     // Valores de -20 a 100
-                    presion: parseFloat((Math.random() * 400 + 750).toFixed(2))     // Valores simulados de presión
+                    temperatura: parseFloat((Math.random() * 80 - 20).toFixed(2)), 
+                    humedad: parseFloat((Math.random() * 120 - 20).toFixed(2)),     
+                    presion: parseFloat((Math.random() * 400 + 750).toFixed(2))     
                 });
             }
 
-            // REQUISITO: Transferir los datos al Web Worker para su procesamiento en segundo plano
             if (typeof(Worker) !== "undefined") {
-                // Instanciamos el worker apuntando al archivo que creaste antes
                 const miWorker = new Worker("worker-nivel5.js");
 
-                // Enviamos el bloque masivo de datos
                 miWorker.postMessage(registrosSimulados);
 
-                // Escuchamos las respuestas procedentes del hilo del worker
                 miWorker.onmessage = function(evento) {
                     const data = evento.data;
 
-                    // REQUISITO: Actualizar la barra de carga progresivamente sin congelar la UI
                     if (data.tipo === 'progreso') {
                         barraProgreso.style.width = data.valor + '%';
                         barraProgreso.innerText = data.valor + '%';
                     } 
-                    
-                    // REQUISITO: Procesamiento finalizado, renderizamos estadísticas en la Card de Bootstrap
                     else if (data.tipo === 'finalizado') {
-                        resultadosFinalesGuardados = data.resultados; // Guardamos copia para la exportación JSON
+                        resultadosFinalesGuardados = data.resultado; 
                         
-                        // Pintamos el resumen cuantitativo
-                        document.getElementById('resValidos').innerText = data.resultados.cantidadValidos.toLocaleString();
-                        document.getElementById('resPromTemp').innerText = data.resultados.promedios.temperatura + ' °C';
-                        document.getElementById('resPromHum').innerText = data.resultados.promedios.humedad + ' %';
-                        document.getElementById('resPromPres').innerText = data.resultados.promedios.presion + ' hPa';
+                        document.getElementById('resValidos').innerText = data.resultado.cantidadValidos.toLocaleString();
+                        document.getElementById('resPromTemp').innerText = data.resultado.promedios.temperatura + ' °C';
+                        document.getElementById('resPromHum').innerText = data.resultado.promedios.humedad + ' %';
+                        document.getElementById('resPromPres').innerText = data.resultado.promedios.presion + ' hPa';
 
-                        // Pintamos el Top 10 de Temperaturas
                         const listaTemp = document.getElementById('listaTopTemp');
                         listaTemp.innerHTML = '';
-                        data.resultados.top10Temperaturas.forEach(t => {
+                        data.resultado.top10Temperaturas.forEach(t => {
                             listaTemp.innerHTML += `<li class="list-group-item p-1 d-flex justify-content-between align-items-center">${t} °C</li>`;
                         });
 
-                        // Pintamos el Top 10 de Medidas de Presión
                         const listaPres = document.getElementById('listaTopPres');
                         listaPres.innerHTML = '';
-                        data.resultados.top10Presiones.forEach(p => {
+                        data.resultado.top10Presiones.forEach(p => {
                             listaPres.innerHTML += `<li class="list-group-item p-1 d-flex justify-content-between align-items-center">${p} hPa</li>`;
                         });
 
-                        // Mostramos el contenedor de resultados finalizado con éxito
                         cardResultados.classList.remove('d-none');
                         btnIniciar.disabled = false;
-                        
-                        // Cerramos el worker para liberar la memoria RAM del navegador
                         miWorker.terminate();
                     }
                 };
             } else {
-                alert("Error crítico: Este navegador no soporta Web Workers. Requisito indispensable.");
+                alert("Error crítico: Este navegador no soporta Web Workers.");
                 btnIniciar.disabled = false;
             }
         }
 
-        // REQUISITO: Exportar los resultados a un JSON descargable mediante un botón
         document.getElementById('btnExportarJSON').addEventListener('click', function() {
             if (!resultadosFinalesGuardados) return;
-
-            // Transformamos el objeto de resultados en una cadena JSON indentada
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(resultadosFinalesGuardados, null, 2));
-            
-            // Creamos un nodo de anclaje invisible para disparar la descarga en el cliente nativo
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
             downloadAnchor.setAttribute("download", "resultados_portal_cuantico.json");
@@ -172,5 +162,3 @@
     </script>
 </body>
 </html>
-
-
