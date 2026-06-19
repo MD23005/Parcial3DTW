@@ -107,7 +107,7 @@
             }
 
             if (typeof(Worker) !== "undefined") {
-                const miWorker = new Worker("worker-nivel5.js");
+                const miWorker = new Worker("../js/worker-nivel5.js");
 
                 miWorker.postMessage(registrosSimulados);
 
