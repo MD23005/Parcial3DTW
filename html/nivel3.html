@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System BREAK 4077 — Nivel 3</title>
+    <link rel="stylesheet" href="../css/nivel3.css">
+</head>
+<body>
+
+    <div class="broken-screen" id="pantalla">
+
+        <div class="glitch-overlay"></div>
+
+        <div class="nivel-contenido">
+
+            <!-- FASE 1: intro terminal -->
+            <div class="fase" id="fase-intro">
+                <div class="terminal-box">
+                    <p class="terminal-label">SYSTEM BREAK 4077 // NIVEL 3</p>
+                    <h2 class="nivel-titulo">La Evidencia del Explorador</h2>
+                    <div id="texto-terminal" class="texto-terminal"></div>
+                    <button id="btn-activar-camara" class="btn-neon" style="display:none;">
+                        [ ACTIVAR CAMARA ]
+                    </button>
+                </div>
+            </div>
+
+            <!-- FASE 2: camara y captura -->
+            <div class="fase" id="fase-camara" style="display:none;">
+
+                <div class="hud-top">
+                    <span class="hud-label">// VERIFICACION BIOMETRICA</span>
+                    <span class="hud-status" id="hud-status">● EN VIVO</span>
+                </div>
+
+                <div class="camara-layout">
+
+                    <!-- video -->
+                    <div class="panel-video">
+                        <div class="scanner-frame">
+                            <video id="video-stream" autoplay playsinline muted></video>
+                            <div class="scan-line"></div>
+                        </div>
+                        <button id="btn-capturar" class="btn-neon btn-capturar" disabled>
+                            [ CAPTURAR EVIDENCIA ]
+                        </button>
+                        <canvas id="canvas-captura" style="display:none;"></canvas>
+                    </div>
+
+                    <!-- foto capturada -->
+                    <div class="panel-evidencia">
+                        <p class="evidencia-label">// EVIDENCIA REGISTRADA</p>
+                        <div class="evidencia-frame">
+                            <p id="evidencia-placeholder" class="evidencia-placeholder">— SIN DATOS —</p>
+                            <img id="foto-capturada" src="" alt="foto" style="display:none;" />
+                        </div>
+                        <div id="info-captura" class="info-captura" style="display:none;">
+                            <p class="info-line">STATUS: REGISTRADA</p>
+                            <p class="info-line">STORAGE: localStorage OK</p>
+                            <p class="info-line" id="info-timestamp"></p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- error de camara -->
+                <div id="error-camara" class="error-terminal" style="display:none;">
+                    <p id="error-mensaje"></p>
+                </div>
+
+                <!-- boton para avanzar -->
+                <div class="avanzar-container">
+                    <button id="btn-avanzar" class="btn-neon btn-avanzar" disabled>
+                        [ AVANZAR AL NIVEL 4 ]
+                    </button>
+                    <p id="avanzar-hint" class="avanzar-hint">Captura una foto para desbloquear</p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../js/nivel3.js"></script>
+</body>
+</html>
