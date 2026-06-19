@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nivel 5: El Portal Cuántico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-dark text-white p-5">
+
+    <div id="nivel5" class="container mt-4 p-4 border border-secondary rounded bg-light text-dark">
+        <h2 class="text-primary"><i class="bi bi-cpu"></i> NIVEL 5: EL PORTAL CUÁNTICO</h2>
+        <p class="text-muted">Procesamiento masivo de 250,000 registros cuánticos en segundo plano sin congelar la interfaz.</p>
+        <hr>
+
+        <button id="btnIniciarNivel5" class="btn btn-dark btn-lg mb-4">
+            <i class="bi bi-play-fill"></i> Iniciar Simulación Cuántica
+        </button>
+
+        <div class="progress mb-4 d-none" id="contenedorProgreso5" style="height: 30px;">
+            <div id="barraProgreso5" class="progress-bar progress-bar-striped progress-bar-animated bg-success fw-bold fs-6" 
+                 role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+        </div>
+
+        <div id="cardResultados5" class="card d-none border-success shadow">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="bi bi-bar-chart-steps"></i> Estadísticas del Portal Cuántico</h4>
+                <span class="badge bg-light text-success fw-bold"><i class="bi bi-shield-check"></i> Desafío Completado</span>
+            </div>
+            <div class="card-body text-dark">
+                <div class="row">
+                    <div class="col-md-6 border-end">
+                        <h5 class="text-primary border-bottom pb-2"><i class="bi bi-info-circle"></i> Resumen de Datos</h5>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Registros Válidos Procesados:
+                                <span id="resValidos" class="badge bg-primary rounded-pill fs-6">0</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Promedio Temperatura:
+                                <span id="resPromTemp" class="fw-bold text-danger">0 °C</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Promedio Humedad:
+                                <span id="resPromHum" class="fw-bold text-info">0 %</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Promedio Presión:
+                                <span id="resPromPres" class="fw-bold text-warning">0 hPa</span>
+                            </li>
+                        </ul>
+                        <button id="btnExportarJSON" class="btn btn-outline-success btn-lg w-100">
+                            <i class="bi bi-download"></i> Exportar Resultados a JSON
+                        </button>
+                    </div>
+
+                    <div class="col-md-3 border-end">
+                        <h5 class="text-danger border-bottom pb-2"><i class="bi bi-thermometer-high"></i> Top 10 Temp.</h5>
+                        <ol id="listaTopTemp" class="list-group list-group-numbered small"></ol>
+                    </div>
+
+                    <div class="col-md-3">
+                        <h5 class="text-warning border-bottom pb-2"><i class="bi bi-speedometer2"></i> Top 10 Presión</h5>
+                        <ol id="listaTopPres" class="list-group list-group-numbered small"></ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // VALIDACIÓN DE FLUJO: Se ejecuta inmediatamente al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            const ubicacion = localStorage.getItem('user_location');
+            
+            // Si no existe la ubicación en localStorage, redirige al nivel 1
+            if (!ubicacion) {
+                alert("Acceso denegado: Primero debes completar los niveles anteriores.");
+                window.location.href = "./nivel1.html";
+            }
+        });
+
+        document.getElementById('btnIniciarNivel5').addEventListener('click', iniciarProcesamientoNivel5);
+
+        let resultadosFinalesGuardados = null; 
+
+        function iniciarProcesamientoNivel5() {
+            const btnIniciar = document.getElementById('btnIniciarNivel5');
+            const contenedorProgreso = document.getElementById('contenedorProgreso5');
+            const barraProgreso = document.getElementById('barraProgreso5');
+            const cardResultados = document.getElementById('cardResultados5');
+
+            btnIniciar.disabled = true;
+            contenedorProgreso.classList.remove('d-none');
+            cardResultados.classList.add('d-none');
+            barraProgreso.style.width = '0%';
+            barraProgreso.innerText = '0%';
+
+            const registrosSimulados = [];
+            for (let i = 0; i < 250000; i++) {
+                registrosSimulados.push({
+                    temperatura: parseFloat((Math.random() * 80 - 20).toFixed(2)), 
+                    humedad: parseFloat((Math.random() * 120 - 20).toFixed(2)),     
+                    presion: parseFloat((Math.random() * 400 + 750).toFixed(2))     
+                });
+            }
+
+            if (typeof(Worker) !== "undefined") {
+                const miWorker = new Worker("../js/worker-nivel5.js");
+
+                miWorker.postMessage(registrosSimulados);
+
+                miWorker.onmessage = function(evento) {
+                    const data = evento.data;
+
+                    if (data.tipo === 'progreso') {
+                        barraProgreso.style.width = data.valor + '%';
+                        barraProgreso.innerText = data.valor + '%';
+                    } 
+                    else if (data.tipo === 'finalizado') {
+                        resultadosFinalesGuardados = data.resultado; 
+                        
+                        document.getElementById('resValidos').innerText = data.resultado.cantidadValidos.toLocaleString();
+                        document.getElementById('resPromTemp').innerText = data.resultado.promedios.temperatura + ' °C';
+                        document.getElementById('resPromHum').innerText = data.resultado.promedios.humedad + ' %';
+                        document.getElementById('resPromPres').innerText = data.resultado.promedios.presion + ' hPa';
+
+                        const listaTemp = document.getElementById('listaTopTemp');
+                        listaTemp.innerHTML = '';
+                        data.resultado.top10Temperaturas.forEach(t => {
+                            listaTemp.innerHTML += `<li class="list-group-item p-1 d-flex justify-content-between align-items-center">${t} °C</li>`;
+                        });
+
+                        const listaPres = document.getElementById('listaTopPres');
+                        listaPres.innerHTML = '';
+                        data.resultado.top10Presiones.forEach(p => {
+                            listaPres.innerHTML += `<li class="list-group-item p-1 d-flex justify-content-between align-items-center">${p} hPa</li>`;
+                        });
+
+                        cardResultados.classList.remove('d-none');
+                        btnIniciar.disabled = false;
+                        miWorker.terminate();
+                    }
+                };
+            } else {
+                alert("Error crítico: Este navegador no soporta Web Workers.");
+                btnIniciar.disabled = false;
+            }
+        }
+
+        document.getElementById('btnExportarJSON').addEventListener('click', function() {
+            if (!resultadosFinalesGuardados) return;
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(resultadosFinalesGuardados, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "resultados_portal_cuantico.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        });
+    </script>
+</body>
+</html>
