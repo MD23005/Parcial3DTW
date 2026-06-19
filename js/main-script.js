@@ -33,3 +33,18 @@ window.addEventListener("DOMContentLoaded", ()=>{
     EstiloVentana.innerHTML=`.ss-city::before { box-shadow: ${ventanasCSS.join(', ')}; }`;
     document.head.appendChild(EstiloVentana);
 })
+
+const botonIniciar = document.getElementById("btn-iniciar");
+const pantalla = document.getElementById("pantalla");
+
+botonIniciar.addEventListener("click", ()=>{
+    botonIniciar.classList.add('boton-hidden');
+
+    pantalla.classList.add('fullscreen');
+})
+
+pantalla.addEventListener("transitionend",(event)=>{
+    if(event.propertyName === 'width'){
+        window.location.href = './html/nivel1.html'
+    }
+})

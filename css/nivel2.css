@@ -1,0 +1,241 @@
+@import url('https://fonts.googleapis.com/css2?family=Honk:MORF@15&family=Press+Start+2P&display=swap');
+
+
+body{
+    margin: 0;
+    padding: 0;
+    background-color: rgb(80, 80, 80);
+}
+
+/* Fondo con líneas horizontales */
+.broken-screen {
+    width: 100vw;
+    height: 100vh;
+    bottom: 0;
+    left: 0;
+    transform: translateX(0); /* Quitamos el centrado manual */
+    border: 0px solid transparent; /* El marco gris desaparece para simular inmersión */
+    border-radius: 0px; /* Adiós esquinas redondeadas */
+    z-index: 9999;
+    overflow: hidden; /* Se pone por encima de absolutamente todo en tu web */
+}
+
+.broken-screen::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 3;
+    pointer-events: none; /* No interrumpe los clics */
+    opacity: 0.8;
+}
+
+.glitch-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(117, 117, 117, 0.651),
+        rgba(0, 0, 0, 0.801) 2px,
+        transparent 2px,
+        transparent 4px
+    ); /* Líneas de escaneo de TV vieja */
+    /*animation: glitch-scan 2.5s infinite, glitch-screen 5s linear infinite;*/
+}
+
+
+/* Título del nivel */
+.title-container{
+    position: absolute;
+    top: 35%;
+    left: 35%;
+    text-align: center;
+
+    animation: desvanecer 3s ease-in-out 1;
+    animation-fill-mode: forwards;
+}
+.title-container h1{
+    font-size: 50px;
+    font-family: "Press Start 2P", system-ui;
+}
+
+/* Animaciones */
+
+@keyframes glitch-screen {
+0%, 85%, 89%, 100% {
+        transform: scale(1) skewX(0deg) translateX(-50%);
+        filter: hue-rotate(0deg) saturate(1) brightness(1);
+        opacity: 1;
+    }
+    86% {
+        transform: scale(1.08) skewX(12deg) translateX(-50%); 
+        filter: hue-rotate(90deg) saturate(2); 
+        opacity: 0.7;
+    }
+    87% {
+        transform: scale(0.92) skewX(-15deg) translateX(-50%);
+        filter: hue-rotate(250deg) brightness(1.8);
+        opacity: 0.9;
+    }
+    88% {
+        transform: scale(1) skewX(0deg);
+        filter: brightness(0); /* Pantalla apagada por un milisegundo */
+    }
+}
+
+/* 2. Parpadeo rápido de las líneas de escaneo */
+@keyframes glitch-scan {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 0 100%; /* Hace que las líneas bajen fluidamente */
+    }
+}
+
+/* Aparición y desaparición del texto */
+@keyframes desvanecer {
+    0%, 100% {
+        opacity: 0; /* Empieza y termina totalmente invisible */
+    }
+    40%, 60% {
+        opacity: 1; /* Se mantiene completamente visible entre el 40% y el 60% del tiempo */
+    }
+}
+
+/* Contenedor del mapa */
+.map-container{
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.9);
+    animation: fadeInContainer 0.8s ease-out 3s forwards;
+    width: 100vw;
+    height: 100vh;
+}
+
+@keyframes fadeInContainer {
+    0% {
+        opacity: 0; transform: scale(0.9); visibility: hidden;
+    }
+    1%{
+        opacity: 0; visibility: visible;
+    }
+    100%{
+        opacity: 1; transform: scale(1); visibility: visible;
+    }
+}
+
+
+/* Bocadillo de Texto */
+.bubble {
+    background: transparent;
+    color: #000;
+    font-family: 'Press Start 2P', system-ui;
+    padding: 15px 20px;
+    position: relative;
+    max-width: 100vw;
+    text-align: center;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px 10px 0;
+    border-style: solid;
+    border-color: #f4f7f6 transparent;
+}
+
+.bubble.loading {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+/* contenerdor del mapa */
+.mapa{
+    position: absolute;
+    top: 18%;
+    left: 20%;
+}
+
+/* Botón para ver el mapa */
+#marcar-btn{
+    padding: 10px;
+    font-family: 'Press Start 2P', system-ui;
+    background: transparent;
+    border: 2px solid #000;
+    color: #000;
+    cursor: pointer;
+    font-size: 40px;
+    position: absolute;
+    top: 30%;
+    left: 38%;
+    z-index: 99;
+}
+
+.btn-hidden{
+    display: none;
+}
+
+#marcar-btn:hover{
+    transform: scale(1.1);
+    transition: 0.5s ease-out;
+    box-shadow: 0 0 10px #000;
+}
+
+/* Botón para marcar el puntero en el mapa */
+
+#pointer-map{
+    padding: 10px;
+    font-family: 'Press Start 2P', system-ui;
+    background: transparent;
+    border: 2px solid #000;
+    color: #000;
+    cursor: pointer;
+    font-size: 15px;
+    position: absolute;
+    bottom: 5%;
+    left: 38%;
+    z-index: 99;
+}
+
+#pointer-map:hover{
+    transform: scale(1.1);
+    transition: 0.5s ease-out;
+    box-shadow: 0 0 10px #000;
+}
+
+.btn-error{
+    border-color: red !important;
+    color: red !important;
+    animation: shake 0.4s ease-out;
+}
+
+@keyframes shake {
+    0%, 100%{transform: translateX(0); }
+    20%, 60%{transform: translateX(-6px);}
+    40%, 80%{transform: translateX(6px);}
+}
+
+.continuar-btn{
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    transition: transform 0.2s;
+
+    padding: 10px;
+    font-family: 'Press Start 2P', system-ui;
+    background: transparent;
+    border: 2px solid #000;
+    color: #000;
+    cursor: pointer;
+    font-size: 15px;
+    z-index: 99;
+}
+
+#btn-continuar:hover{
+    transform: translateY(2px);
+}

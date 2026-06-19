@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System BREAK 4077 - nivel 1</title>
+    <link rel="stylesheet" href="../css/nivel1.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="broken-screen" id="pantalla">
+        <div class="glitch-overlay">
+            <div class="title-container">
+                <h1>Nivel 1</h1>
+                <h2>El guardián de la ubicación</h2>
+            </div>
+
+            <div class="robot-container">
+                <!-- Bocadillo de diálogo -->
+                <div class="bubble" id="speech-bubble">Bienvenido aventurero informático, para avanzar al siguiente nivel debes brindarnos tu ubicación actual</div>
+
+                <!-- El Robot -->
+                <div class="robot">
+                    <div class="antenna">
+                        <div class="antenna-ball" id="antenna-glow"></div>
+                        <div class="antenna-rod"></div>
+                    </div>
+                    <div class="head">
+                        <div class="face">
+                            <div class="eyes-container">
+                                <div class="eye left-eye"><div class="pupil"></div></div>
+                                <div class="eye right-eye"><div class="pupil"></div></div>
+                            </div>
+                            <div class="mouth" id="robot-mouth"></div>
+                        </div>
+                    </div>
+                    <div class="neck"></div>
+                    <div class="body-robot">
+                        <div class="screen">
+                            <div class="heart" id="robot-heart"><i class="fa-duotone fa-solid fa-gear"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controles -->
+                <button class="btn-action" id="action-btn">Brindar Ubicación</button>
+            </div>
+            <button class="btn-action continuar-btn" id="continuar-btn">Continuar al siguiente nivel</button>
+        </div>
+    </div>
+    <script src="../js/nivel1.js"></script>
+</body>
+</html>
